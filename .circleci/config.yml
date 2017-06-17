@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  test:
     working_directory: /go/src/github.com/jtslear/game-of-sticks
     docker:
       - image: circleci/golang:1.8.3
@@ -21,3 +21,45 @@ jobs:
             go test -v | tee ${TEST_RESULTS}/go-test.out
       - store_test_results:
           path: /tmp/test-results
+  compile_osx:
+    working_directory: /go/src/github.com/jtslear/game-of-sticks
+    docker:
+      - image: circleci/golang:1.8.3
+    environment:
+      GOOS: darwin
+      GOARCH: amd64
+    steps:
+      - checkout
+      - run:
+          name: make OSX executable
+          command: go build -o game-of-sticks
+  compile_win:
+    working_directory: /go/src/github.com/jtslear/game-of-sticks
+    docker:
+      - image: circleci/golang:1.8.3
+    environment:
+      GOOS: windows
+      GOARCH: amd64
+    steps:
+      - checkout
+      - run:
+          name: make executable
+          command: go build -o game-of-sticks.exe
+
+workflows:
+  version: 2
+  test_build:
+    jobs:
+      - test
+      - compile_osx:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+      - compile_win:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
