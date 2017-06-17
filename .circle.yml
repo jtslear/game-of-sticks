@@ -1,0 +1,21 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/jtslear/game-of-sticks
+    docker:
+      - image: circleci/golang:1.8.3
+    steps:
+      - checkout
+      - run:
+          name: make test results dir
+          command: mkdir -p $TEST_RESULTS
+      - run:
+          name: install golang junit
+          command: go get github.com/jstemmer/go-junit-report
+      - run:
+        name: runtests
+          command: |
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            go test -v | tee ${TEST_RESULTS}/go-test.out
+      - store_test_results:
+          path: /tmp/test-results
