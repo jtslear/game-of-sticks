@@ -87,33 +87,8 @@ func playAFriend(stickCount int) {
 	fmt.Println(stickCount)
 }
 
-func playAComputer(stickCount int) {
-	fmt.Println(stickCount)
-}
-
-func chooseGamePlay(stickCount int) {
-	fmt.Printf("*************************************************\n")
-	fmt.Printf("*\tGame Modes\t\t\t\t*\n")
-	fmt.Printf("*************************************************\n\n\n")
-	fmt.Printf("1. Play against a Friend\n")
-	fmt.Printf("2. Play against an unintelligent Computer\n")
-	fmt.Printf("Pick one: ")
-	reader := bufio.NewReader(os.Stdin)
-	input, _ := reader.ReadString('\n')
-	choice := strings.TrimSpace(input)
-	switch choice {
-	case "1":
-		playAFriend(stickCount)
-	case "2":
-		playAComputer(stickCount)
-	default:
-		fmt.Printf("%s Is not a valid choice try again\n", choice)
-		chooseGamePlay(stickCount)
-	}
-}
-
 func main() {
 	var stickCount int
 	stickCount = startGame()
-	chooseGamePlay(stickCount)
+	playAFriend(stickCount)
 }
