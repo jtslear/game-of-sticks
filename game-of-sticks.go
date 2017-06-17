@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 	"strconv"
@@ -57,6 +58,15 @@ func offerToPlayAgain() {
 	}
 }
 
+func playerGrabsStick(player string) int {
+	var grabCount int
+	fmt.Printf("%s How many sticks do you take (1-3)? ", player)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	grabCount, _ = strconv.Atoi(strings.TrimSpace(input))
+	return grabCount
+}
+
 func playAFriend(stickCount int) {
 	fmt.Printf("*************************************************\n")
 	fmt.Printf("*\tPlaying against a Friend\t\t*\n")
@@ -64,13 +74,10 @@ func playAFriend(stickCount int) {
 	players := []string{"Player1", "Player2"}
 	for stickCount > 0 {
 		player := players[0]
-		grabCount := 0
+		var grabCount int
 		fmt.Printf("--> There are %d sticks on the board.\n", stickCount)
 		for !validateStickCount(grabCount, 1, 3) {
-			fmt.Printf("%s How many sticks do you take (1-3)? ", player)
-			reader := bufio.NewReader(os.Stdin)
-			input, _ := reader.ReadString('\n')
-			grabCount, _ = strconv.Atoi(strings.TrimSpace(input))
+			grabCount = playerGrabsStick(player)
 		}
 		if stickCount - grabCount == 0 {
 			stickCount = stickCount - grabCount
@@ -84,11 +91,62 @@ func playAFriend(stickCount int) {
 			players = swapPlayer(players)
 		}
 	}
-	fmt.Println(stickCount)
+}
+
+func playAComputer(stickCount int) {
+	fmt.Printf("*************************************************\n")
+	fmt.Printf("*   Playing against an unintelligent Computer   *\n")
+	fmt.Printf("*************************************************\n\n\n")
+	players := []string{"Player1", "Computer"}
+	for stickCount > 0 {
+		player := players[0]
+		var grabCount int
+		fmt.Printf("--> There are %d sticks on the board.\n", stickCount)
+		for !validateStickCount(grabCount, 1, 3) {
+			if player == "Computer" {
+				grabCount = rand.Intn(3)
+				fmt.Printf("Computer selects %d\n", grabCount)
+			} else {
+				grabCount = playerGrabsStick(player)
+			}
+		}
+		if stickCount - grabCount == 0 {
+			stickCount = stickCount - grabCount
+			fmt.Printf("%s loses.\n\n", player)
+			offerToPlayAgain()
+		} else if stickCount - grabCount < 0 {
+			fmt.Printf("There aren't that many sticks left. Try again.\n")
+		} else if stickCount - grabCount > 0 {
+			stickCount = stickCount - grabCount
+			fmt.Printf("\n")
+			players = swapPlayer(players)
+		}
+	}
+}
+
+func chooseGamePlay(stickCount int) {
+	fmt.Printf("*************************************************\n")
+	fmt.Printf("*\tGame Modes\t\t\t\t*\n")
+	fmt.Printf("*************************************************\n\n\n")
+	fmt.Printf("1. Play against a Friend\n")
+	fmt.Printf("2. Play against an unintelligent Computer\n")
+	fmt.Printf("Pick one: ")
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	choice := strings.TrimSpace(input)
+	switch choice {
+	case "1":
+		playAFriend(stickCount)
+	case "2":
+		playAComputer(stickCount)
+	default:
+		fmt.Printf("%s Is not a valid choice try again\n", choice)
+		chooseGamePlay(stickCount)
+	}
 }
 
 func main() {
 	var stickCount int
 	stickCount = startGame()
-	playAFriend(stickCount)
+	chooseGamePlay(stickCount)
 }
