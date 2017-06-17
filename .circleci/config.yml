@@ -1,0 +1,72 @@
+version: 2
+jobs:
+  test:
+    working_directory: /go/src/github.com/jtslear/game-of-sticks
+    docker:
+      - image: circleci/golang:1.8.3
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+      - checkout
+      - run:
+          name: make test results dir
+          command: mkdir -p $TEST_RESULTS
+      - run:
+          name: install golang junit
+          command: go get github.com/jstemmer/go-junit-report
+      - run:
+          name: runtests
+          command: |
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            go test -v | tee ${TEST_RESULTS}/go-test.out
+      - store_test_results:
+          path: /tmp/test-results
+  compile_osx:
+    working_directory: /go/src/github.com/jtslear/game-of-sticks
+    docker:
+      - image: circleci/golang:1.8.3
+    environment:
+      GOOS: darwin
+      GOARCH: amd64
+    steps:
+      - checkout
+      - run:
+          name: make OSX executable
+          command: go build -o game-of-sticks
+      - store_artifacts:
+          path: /go/src/github.com/jtslear/game-of-sticks/game-of-sticks
+          destination: /game-of-sticks
+
+  compile_win:
+    working_directory: /go/src/github.com/jtslear/game-of-sticks
+    docker:
+      - image: circleci/golang:1.8.3
+    environment:
+      GOOS: windows
+      GOARCH: amd64
+    steps:
+      - checkout
+      - run:
+          name: make executable
+          command: go build -o game-of-sticks.exe
+      - store_artifacts:
+          path: /go/src/github.com/jtslear/game-of-sticks/game-of-sticks.exe
+          destination: /game-of-sticks.exe
+
+workflows:
+  version: 2
+  test_build:
+    jobs:
+      - test
+      - compile_osx:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+      - compile_win:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
