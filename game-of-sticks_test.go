@@ -27,4 +27,3 @@ func TestSwapPlayer(t *testing.T) {
 		t.Error("Swapped incorrectly")
 	}
 }
-

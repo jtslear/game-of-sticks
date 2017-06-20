@@ -5,17 +5,16 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func validateStickCount(input int, minimum int, maximum int) bool {
 	if input >= minimum && input <= maximum {
 		return true
-	} else {
-		fmt.Printf("Please enter a number between %d and %d\n", minimum, maximum)
-		return false
 	}
+	fmt.Printf("Please enter a number between %d and %d\n", minimum, maximum)
+	return false
 }
 
 func startGame() int {
@@ -79,13 +78,13 @@ func playAFriend(stickCount int) {
 		for !validateStickCount(grabCount, 1, 3) {
 			grabCount = playerGrabsStick(player)
 		}
-		if stickCount - grabCount == 0 {
+		if stickCount-grabCount == 0 {
 			stickCount = stickCount - grabCount
 			fmt.Printf("%s loses.\n\n", player)
 			offerToPlayAgain()
-		} else if stickCount - grabCount < 0 {
+		} else if stickCount-grabCount < 0 {
 			fmt.Printf("There aren't that many sticks left. Try again.\n")
-		} else if stickCount - grabCount > 0 {
+		} else if stickCount-grabCount > 0 {
 			stickCount = stickCount - grabCount
 			fmt.Printf("\n")
 			players = swapPlayer(players)
@@ -110,13 +109,13 @@ func playAComputer(stickCount int) {
 				grabCount = playerGrabsStick(player)
 			}
 		}
-		if stickCount - grabCount == 0 {
+		if stickCount-grabCount == 0 {
 			stickCount = stickCount - grabCount
 			fmt.Printf("%s loses.\n\n", player)
 			offerToPlayAgain()
-		} else if stickCount - grabCount < 0 {
+		} else if stickCount-grabCount < 0 {
 			fmt.Printf("There aren't that many sticks left. Try again.\n")
-		} else if stickCount - grabCount > 0 {
+		} else if stickCount-grabCount > 0 {
 			stickCount = stickCount - grabCount
 			fmt.Printf("\n")
 			players = swapPlayer(players)
