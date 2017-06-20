@@ -18,9 +18,11 @@ jobs:
           name: runtests
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-            go test -v | tee ${TEST_RESULTS}/go-test.out
+            go test -race -coverprofile=coverage.txt -covermode=atomic -v | tee ${TEST_RESULTS}/go-test.out
+            bash <(curl -s https://codecov.io/bash)
       - store_test_results:
           path: /tmp/test-results
+
   compile_osx:
     working_directory: /go/src/github.com/jtslear/game-of-sticks
     docker:
